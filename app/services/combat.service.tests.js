@@ -28,7 +28,7 @@ describe('combat tests', function() {
 			};
 
 			combat.rollInitiative(combatant);
-			expect(combatant.initiative).toEqual(12);
+			expect(combatant.initiative).toEqual(11);
 			expect(combatant.initiativeRolled).toBeTruthy();
 		});
 
