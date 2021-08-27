@@ -36,6 +36,8 @@ module.exports = function(config) {
     exclude: [
     ],
 
+    // Use a reporter to print detailed results
+    reporters: ['spec'],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://www.npmjs.com/search?q=keywords:karma-preprocessor
