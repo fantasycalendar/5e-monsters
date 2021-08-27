@@ -1,7 +1,5 @@
 "use strict";
 
-// For Gulp3 documentation see https://github.com/gulpjs/gulp/blob/v3.9.1/docs/API.md
-
 // Dependencies
 const { src, dest, series, parallel, task, watch } = require('gulp');
 var config = require('./gulp.config.js')();
@@ -20,6 +18,7 @@ const rev = require('gulp-rev');
 const revReplace = require('gulp-rev-replace');
 var sass = require('gulp-sass')(require('sass'));
 const taskListing = require('gulp-task-listing');
+const uglify = require('gulp-uglify');
 const useref = require('gulp-useref');
 
 const dev = require('yargs').argv.dev;
@@ -31,18 +30,6 @@ task('help', taskListing); // Lists all public tasks
 function clean(path, done) {
     log('Cleaning: ' + colors.blue(path));
     del(path, { force: true }).then(paths => done());
-}
-
-function printLog(msg) { // our special way of printing log messages (this is probably unnecessary)
-    if (typeof (msg) === 'object') {
-        for (var item in msg) {
-            if (msg.hasOwnProperty(item)) {
-                log(colors.blue(msg[item]));
-            }
-        }
-    } else {
-        log(colors.blue(msg));
-    }
 }
 
 function injectAtLabels(source, label, order) { // Injects the source file/s into the target file/s at defined placeholder labels
@@ -79,7 +66,7 @@ function cleanBuild(done) {
 /***** Helper Tasks: Template Building *****/
 
 task('template-cache', series(cleanCode, function () {
-    printLog('Creating an AngularJS $templateCache');
+    log(colors.blue('Creating an AngularJS $templateCache'));
 
     return src(config.htmltemplates)
         .pipe(minifyHTML({ empty: true }))
@@ -92,7 +79,7 @@ task('template-cache', series(cleanCode, function () {
 }));
 
 task('remove-template', function () {
-    printLog('Removing template');
+    log(colors.blue('Removing template'));
 
     return src(config.index)
         .pipe(replace(
@@ -105,7 +92,7 @@ task('remove-template', function () {
 /***** Helper Tasks: Sass -> CSS ******/
 
 task('compile-sass', series(cleanStyles, function () {
-    printLog('Compiling SASS --> CSS');
+    log(colors.blue('Compiling SASS --> CSS'));
 
     return src(config.sassDir)
         .pipe(sass())
@@ -126,8 +113,10 @@ if ( dev ) {
     injectDependencies.push('template-cache');
 }
 
-task('inject', series(injectDependencies, function () { // first run compile-sass, then template-cache, then finally run inject
-    printLog('Wire up css and js into the html, after files are ready');
+// The default task which injects everything built (Sass (CSS), angular js) into ./index.html
+// Does this by first compiling Sass -> CSS, then building the angular JS template, then injecting into the <!-- inject --> tags in ./index.html
+task('default', series(injectDependencies, function () {
+    log(colors.blue('Prepare CSS, JS, then inject into HTML'));
 
     var result = src(config.index)
         .pipe(injectAtLabels(config.cssFile))
@@ -144,11 +133,30 @@ task('inject', series(injectDependencies, function () { // first run compile-sas
     return result;
 }));
 
-task('default', series('inject')); // 
-
 /***** Optimisation ******/
 
-/***** Helper Tasks: Copying *****/
+task('optimize', series('default', cleanBuild, function () {
+    var cssFilter = filter('./styles/*.css', {restore: true});
+    var jsAppFilter = filter('**/' + config.optimized.app, {restore: true});
+    var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
+    return src(config.index)
+        .pipe(useref())
+        .pipe(cssFilter)
+            .pipe(csso())
+            .pipe(cssFilter.restore)
+        .pipe(jsAppFilter)
+            .pipe(uglify())
+            .pipe(jsAppFilter.restore)
+        .pipe(indexHtmlFilter)
+            .pipe(rev())
+            .pipe(indexHtmlFilter.restore)
+        .pipe(revReplace())
+        .pipe(dest(config.build));
+})
+);
+
+/***** Build /docs *****/
+// Purpose: To serve something for GitHub pages to build
 
 function copyThirdParty() {
     return src(config.root + '/thirdparty/**/*')
@@ -177,22 +185,4 @@ function copyCNAME() {
 
 task('copy-resources', series(copyThirdParty, copyJSON, copyImages, copyManifest, copyCNAME)); // In testing, no appreciable benefit in parallelising this task
 
-/**** Optimisation Task *****/
-
-task('optimize', series('inject', cleanBuild, 'copy-resources', function () {
-    var cssFilter = filter('./styles/*.css', {restore: true});
-    // TODO: JS filter temporarily disabled until the dependency injection issue is resolved
-    // var jsAppFilter = filter('**/' + config.optimized.app, {restore: true});
-    // comment: Dependency injection has been resolved, uncomment this.
-    var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
-    return src(config.index)
-        .pipe(useref())
-        .pipe(cssFilter)
-            .pipe(csso())
-            .pipe(cssFilter.restore)
-        .pipe(indexHtmlFilter)
-            .pipe(rev())
-            .pipe(indexHtmlFilter.restore)
-        .pipe(revReplace())
-        .pipe(dest(config.build));
-}));
+task('export', series('optimize', 'copy-resources')); 
