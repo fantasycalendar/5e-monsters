@@ -9,7 +9,6 @@
   routerHelperProvider.$inject = ['$locationProvider', '$stateProvider', '$urlRouterProvider'];
   /* @ngInject */
   function routerHelperProvider($locationProvider, $stateProvider, $urlRouterProvider) {
-      /* jshint validthis:true */
       this.$get = RouterHelper;
 
       //$locationProvider.html5Mode(true);
