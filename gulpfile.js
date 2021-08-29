@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 // For Gulp3 documentation see https://github.com/gulpjs/gulp/blob/v3.9.1/docs/API.md
 

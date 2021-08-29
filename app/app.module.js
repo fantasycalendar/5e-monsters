@@ -1,6 +1,6 @@
 (function () {
 	/* global requirejs */
-	"use strict";
+	'use strict';
 
 	// polyfill for older browsers that don't support Number.parseInt natively
 	if ( !Number.parseInt ) {

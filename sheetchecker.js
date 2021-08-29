@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var SC = angular.module("app", []);
 
 SC.directive("sheetChecker", function (testSheet) {
