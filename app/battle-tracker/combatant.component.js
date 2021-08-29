@@ -1,8 +1,7 @@
 (function() {
 'use strict';
 
-    angular
-        .module('app')
+    angular.module('app')
         .component('combatant', {
             templateUrl: 'app/battle-tracker/combatant.html',
             controller: CombatantController,

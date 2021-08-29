@@ -1,8 +1,7 @@
 (function() {
 'use strict';
 
-  angular
-    .module('app')
+  angular.module('app')
     .value('playerLevels', {
       1: { level: 1,    budget: 300,	easy: 25,	medium: 50,		hard: 75,	deadly: 100 },
       2: { level: 2,    budget: 600,	easy: 50,	medium: 100,	hard: 150,	deadly: 200 },

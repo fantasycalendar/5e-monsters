@@ -2,8 +2,7 @@
 /* global _ */
 'use strict';
 
-  angular
-    .module('app')
+  angular.module('app')
     .factory('partyInfo', PartyInfo);
 
   PartyInfo.inject = ['playerLevels', 'store'];

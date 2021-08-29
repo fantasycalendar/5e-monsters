@@ -1,94 +1,122 @@
-"use strict";
+'use strict';
 
-var config = require('./gulp.config')();
-var del = require('del');
-var gulp = require('gulp');
-var $ = require('gulp-load-plugins')({ lazy: true });
-var argv = require('yargs').argv;
-var replace = require('gulp-replace');
-// var fs = require('fs');
+// For Gulp3 documentation see https://github.com/gulpjs/gulp/blob/v3.9.1/docs/API.md
 
-var dev = argv.dev;
+// Dependencies
+const { src, dest, series, parallel, task, watch } = require('gulp');
+var config = require('./gulp.config.js')();
+const colors = require('ansi-colors');
+const del = require('del');
+const log = require('fancy-log');
+const angularTemplateCache = require('gulp-angular-templatecache');
+const csso = require('gulp-csso');
+const filter = require('gulp-filter');
+const gulpif = require('gulp-if');
+const inject = require('gulp-inject');
+const minifyHTML = require('gulp-htmlmin');
+const gulporder = require('gulp-order');
+const replace = require('gulp-replace');
+const rev = require('gulp-rev');
+const revReplace = require('gulp-rev-replace');
+var sass = require('gulp-sass')(require('sass'));
+const taskListing = require('gulp-task-listing');
+const useref = require('gulp-useref');
 
-gulp.task('help', $.taskListing);
-gulp.task('default', ['inject']);
+const dev = require('yargs').argv.dev;
 
-gulp.task('copy-thirdparty', function() {
-    return gulp.src(config.root + '/thirdparty/**/*')
-        .pipe(gulp.dest(config.root + '/' + config.build + '/thirdparty'));
-});
+task('help', taskListing); // Lists all public tasks
 
-gulp.task('copy-json', function() {
-    return gulp.src(config.root + '/json/**/*')
-        .pipe(gulp.dest(config.root + '/' + config.build + '/json'));
-});
+/***** Helper Functions *****/
 
-gulp.task('copy-images', function() {
-    return gulp.src(config.root + '/images/**/*')
-        .pipe(gulp.dest(config.root + '/' + config.build + '/images'));
-});
+function clean(path, done) {
+    log('Cleaning: ' + colors.blue(path));
+    del(path, { force: true }).then(paths => done());
+}
 
-gulp.task('copy-manifest', function() {
-    return gulp.src(config.root + '/manifest.json')
-        .pipe(gulp.dest(config.root + '/' + config.build));
-});
+function printLog(msg) { // our special way of printing log messages (this is probably unnecessary)
+    if (typeof (msg) === 'object') {
+        for (var item in msg) {
+            if (msg.hasOwnProperty(item)) {
+                log(colors.blue(msg[item]));
+            }
+        }
+    } else {
+        log(colors.blue(msg));
+    }
+}
 
-gulp.task('copy-cname', function() {
-    return gulp.src(config.root + '/CNAME')
-        .pipe(gulp.dest(config.root + '/' + config.build));
-});
+function injectAtLabels(source, label, order) { // Injects the source file/s into the target file/s at defined placeholder labels
+    var options = { addRootSlash: false };
+    if (label) {
+        options.name = 'inject:' + label;
+    }
 
-gulp.task('copy-resources', ['copy-thirdparty', 'copy-json', 'copy-images', 'copy-manifest']);
+    return inject(orderSrc(source, order), options).on('error', log);
+}
 
+function orderSrc(source, order) {
+    return src(source)
+        .pipe(gulpif(order, gulporder(order)));
+}
 
-gulp.task('clean-styles', function (done) {
+/***** Helper Functions: Cleaning *****/
+
+function cleanStyles(done) {
     clean(config.cssFile, done);
-});
+}
 
-gulp.task('clean-code', function (done) {
+function cleanCode(done) {
     var files = [].concat(
         config.temp + '**/*.js'
     );
     clean(files, done);
-});
+}
 
-gulp.task('compile-sass', ['clean-styles'], function () {
-    log('Compiling SASS --> CSS');
+function cleanBuild(done) {
+    clean(config.buildFiles, done);
+}
 
-    return gulp
-        .src(config.sassDir)
-        .pipe($.sass())
-        .pipe(gulp.dest(config.cssDir));
-});
+/***** Helper Tasks: Template Building *****/
 
-gulp.task('sass-watcher', function () {
-    gulp.watch(config.sassWatchFiles, ['compile-sass']);
-});
+task('template-cache', series(cleanCode, function () {
+    printLog('Creating an AngularJS $templateCache');
 
-gulp.task('template-cache', ['clean-code'], function () {
-    log('Creating an AngularJS $templateCache');
-
-    return gulp
-        .src(config.htmltemplates)
-        .pipe($.minifyHtml({ empty: true }))
-        .pipe($.order(['*']))
-        .pipe($.angularTemplatecache(
+    return src(config.htmltemplates)
+        .pipe(minifyHTML({ empty: true }))
+        .pipe(gulporder(['*']))
+        .pipe(angularTemplateCache(
             config.templateCache.file,
             config.templateCache.options
         ))
-        .pipe(gulp.dest(config.temp));
-});
+        .pipe(dest(config.temp));
+}));
 
-gulp.task('remove-template', function () {
-    log('Removing template');
+task('remove-template', function () {
+    printLog('Removing template');
 
-    return gulp.src(config.index)
+    return src(config.index)
         .pipe(replace(
             /(<!-- inject:templates:js -->)(?:[\S\s]*?)(<!-- endinject -->)/gmi,
             '$1\r\n\t$2'
         ))
-        .pipe(gulp.dest(config.root));
+        .pipe(dest(config.root));
 });
+
+/***** Helper Tasks: Sass -> CSS ******/
+
+task('compile-sass', series(cleanStyles, function () {
+    printLog('Compiling SASS --> CSS');
+
+    return src(config.sassDir)
+        .pipe(sass())
+        .pipe(dest(config.cssDir));
+}));
+
+task('sass-watcher', function () {
+    watch(config.sassWatchFiles, series('compile-sass'));
+});
+
+/**** Main Tasks  *****/
 
 // If we're in dev mode, the template.js file will be removed from index.html
 var injectDependencies = ['compile-sass'];
@@ -98,78 +126,73 @@ if ( dev ) {
     injectDependencies.push('template-cache');
 }
 
-gulp.task('inject', injectDependencies, function () {
-    log('Wire up css and js into the html, after files are ready');
+task('inject', series(injectDependencies, function () { // first run compile-sass, then template-cache, then finally run inject
+    printLog('Wire up css and js into the html, after files are ready');
 
-    var result =  gulp
-        .src(config.index)
-        .pipe(inject(config.cssFile))
-        .pipe(inject(config.js, '', config.jsOrder));
+    var result = src(config.index)
+        .pipe(injectAtLabels(config.cssFile))
+        .pipe(injectAtLabels(config.js, '', config.jsOrder));
 
     // Only put in the template cache if we're not in dev mode
     if ( !dev ) {
         var templateCache = config.temp + config.templateCache.file;
-        result = result.pipe(inject(templateCache, 'templates'));
+        result = result.pipe(injectAtLabels(templateCache, 'templates'));
     }
 
-    result = result.pipe(gulp.dest(config.root));
+    result = result.pipe(dest(config.root));
 
     return result;
-});
+}));
 
-gulp.task('clean-build', function(done) {
-    clean(config.buildFiles, done);
-});
+task('default', series('inject')); // 
 
-gulp.task('optimize', ['inject', 'clean-build', 'copy-resources'], function () {
+/***** Optimisation ******/
+
+/***** Helper Tasks: Copying *****/
+
+function copyThirdParty() {
+    return src(config.root + '/thirdparty/**/*')
+        .pipe(dest(config.root + '/' + config.build + '/thirdparty'));
+}
+
+function copyJSON() {
+    return src(config.root + '/json/**/*')
+        .pipe(dest(config.root + '/' + config.build + '/json'));
+}
+
+function copyImages() {
+    return src(config.root + '/images/**/*')
+        .pipe(dest(config.root + '/' + config.build + '/images'));
+}
+
+function copyManifest() {
+    return src(config.root + './manifest.json')
+        .pipe(dest(config.root + '/' + config.build));
+}
+
+function copyCNAME() {
+    return src(config.root + './CNAME')
+        .pipe(dest(config.root + '/' + config.build));
+}
+
+task('copy-resources', series(copyThirdParty, copyJSON, copyImages, copyManifest, copyCNAME)); // In testing, no appreciable benefit in parallelising this task
+
+/**** Optimisation Task *****/
+
+task('optimize', series('inject', cleanBuild, 'copy-resources', function () {
+    var cssFilter = filter('./styles/*.css', {restore: true});
     // TODO: JS filter temporarily disabled until the dependency injection issue is resolved
-    var cssFilter = $.filter('./styles/*.css', {restore: true});
-    // var jsAppFilter = $.filter('**/' + config.optimized.app, {restore: true});
-    var indexHtmlFilter = $.filter(['**/*', '!**/index.html'], { restore: true });
-    return gulp
-        .src(config.index)
-        .pipe($.useref())
+    // var jsAppFilter = filter('**/' + config.optimized.app, {restore: true});
+    // comment: Dependency injection has been resolved, uncomment this.
+    var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
+    return src(config.index)
+        .pipe(useref())
         .pipe(cssFilter)
-            .pipe($.csso())
+            .pipe(csso())
             .pipe(cssFilter.restore)
-        // .pipe(jsAppFilter)
-        //     .pipe($.uglify())
-        //     .pipe(jsAppFilter.restore)
         .pipe(indexHtmlFilter)
-            .pipe($.rev())
+            .pipe(rev())
             .pipe(indexHtmlFilter.restore)
-        .pipe($.revReplace())
-        .pipe(gulp.dest(config.build));
-});
-
-function clean(path, done) {
-    log('Cleaning: ' + $.util.colors.blue(path));
-    del(path, { force: true }).then(paths => done());
-}
-
-function log(msg) {
-    if (typeof (msg) === 'object') {
-        for (var item in msg) {
-            if (msg.hasOwnProperty(item)) {
-                $.util.log($.util.colors.blue(msg[item]));
-            }
-        }
-    } else {
-        $.util.log($.util.colors.blue(msg));
-    }
-}
-
-function inject(src, label, order) {
-    var options = { addRootSlash: false };
-    if (label) {
-        options.name = 'inject:' + label;
-    }
-
-    return $.inject(orderSrc(src, order), options).on('error', log);
-}
-
-function orderSrc(src, order) {
-    return gulp
-        .src(src)
-        .pipe($.if(order, $.order(order)));
-}
+        .pipe(revReplace())
+        .pipe(dest(config.build));
+}));

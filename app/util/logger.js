@@ -1,8 +1,7 @@
 (function() {
   'use strict';
 
-  angular
-    .module('app')
+  angular.module('app')
     .factory('logger', logger);
 
   logger.$inject = ['$log'];

@@ -25,32 +25,38 @@
 <script src="thirdparty/angular/angular.js"></script>
 <script src="sheetchecker.js"></script>
 <script id="sheet-checker-template" language="template/angular">
-	<div ng-if="viaSharable">
-		<h1>IMPORTANT</h1>
-		<div class="notice">
-			If you usually use the secure HTTPS version of KFC, you'll need to use an HTTPS link to load this content, and vice versa. You're currently looking at the {{ secureType }} version.
-			<a ng-href="{{ otherTypeLink }}">Switch to {{ otherType }}</a>
+	<div>
+		<div ng-if="viaSharable">
+			<h1>IMPORTANT</h1>
+			<div class="notice">
+				If you usually use the secure HTTPS version of KFC, you'll need to use an HTTPS link to load this content, and vice versa. You're currently looking at the {{ secureType }} version.
+				<a ng-href="{{ otherTypeLink }}">Switch to {{ otherType }}</a>
+			</div>
 		</div>
+		<input ng-model="name" placeholder="Name (optional)" />
+		<input ng-model="sheetId" placeholder="Sheet ID or URL" />
+		<button ng-click="test()">
+			Test
+		</button>
+		<button ng-click="add()" ng-disabled="untested || !name"> 
+			Add to KFC {{ name ? "" : "(requires name)"}}
+		</button>
+		<div ng-if="sharableLink && !untested">
+			Sharable link: <a href="{{ sharableLink }}">{{ sharableLink }}</a>
+		</div>
+		<table>
+			<tr
+				ng-repeat="message in messages"
+				data-severity="{{ message.severity }}"
+			>
+				<td ng-if="message.message" colspan="4">{{ message.message }}</td>
+				<td ng-if="!message.message">{{ message.fid }}</td>
+				<td ng-if="!message.message">{{ message.field }}</td>
+				<td ng-if="!message.message">{{ message.reason }}</td>
+				<td ng-if="!message.message">{{ message.value }}</td>
+			</tr>
+		</table>
 	</div>
-	<input ng-model="name" placeholder="Name (optional)">
-	<input ng-model="sheetId" placeholder="Sheet ID or URL">
-	<button ng-click="test()">Test</button>
-	<button ng-click="add()" ng-disabled="untested || !name">Add to KFC {{ name ? "" : "(requires name)"}}</button>
-	<div ng-if="sharableLink && !untested">
-		Sharable link: <a href="{{ sharableLink }}">{{ sharableLink }}</a>
-	</div>
-	<table>
-		<tr
-			ng-repeat="message in messages"
-			data-severity="{{ message.severity }}"
-		>
-			<td ng-if="message.message" colspan="4">{{ message.message }}</td>
-			<td ng-if="!message.message">{{ message.fid }}</td>
-			<td ng-if="!message.message">{{ message.field }}</td>
-			<td ng-if="!message.message">{{ message.reason }}</td>
-			<td ng-if="!message.message">{{ message.value }}</td>
-		</tr>
-	</table>
 </script>
 <script src="app/meta/alignments.js"></script>
 <script src="app/meta/crInfo.js"></script>

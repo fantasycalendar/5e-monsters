@@ -1,14 +1,13 @@
 (function () {
 	/* global requirejs */
-	"use strict";
+	'use strict';
 
 	// polyfill for older browsers that don't support Number.parseInt natively
 	if ( !Number.parseInt ) {
 		Number.parseInt = window.parseInt;
 	}
 
-	var myApp = angular
-		.module("app", [
+	var myApp = angular.module("app", [
 			"ui.router",
 			"ngTouch",
 			"angularUtils.directives.dirPagination",

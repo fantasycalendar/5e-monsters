@@ -1,0 +1,98 @@
+{
+  "_args": [
+    [
+      "bardjs@0.1.8",
+      "/workspaces/scaled-encounters"
+    ]
+  ],
+  "_development": true,
+  "_from": "bardjs@0.1.8",
+  "_id": "bardjs@0.1.8",
+  "_inBundle": false,
+  "_integrity": "sha1-Oq6bn2TpeMy9TEn7RI6mvNT2kNw=",
+  "_location": "/bardjs",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "bardjs@0.1.8",
+    "name": "bardjs",
+    "escapedName": "bardjs",
+    "rawSpec": "0.1.8",
+    "saveSpec": null,
+    "fetchSpec": "0.1.8"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "https://registry.npmjs.org/bardjs/-/bardjs-0.1.8.tgz",
+  "_spec": "0.1.8",
+  "_where": "/workspaces/scaled-encounters",
+  "authors": [
+    "John Papa",
+    "Ward Bell"
+  ],
+  "bugs": {
+    "url": "https://github.com/wardbell/bardjs/issues"
+  },
+  "dependencies": {
+    "sinon": ">=1.12.2"
+  },
+  "description": "Spec helpers for testing angular v.1.x apps with Mocha, Jasmine or QUnit",
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "del": "^1.1.0",
+    "glob": "^4.3.2",
+    "gulp": "^3.8.10",
+    "gulp-bump": "^0.2.2",
+    "gulp-bytediff": "^0.2.0",
+    "gulp-header": "^1.2.2",
+    "gulp-if": "^1.2.5",
+    "gulp-jscs": "^1.3.1",
+    "gulp-jshint": "^1.9.0",
+    "gulp-load-plugins": "^0.8.0",
+    "gulp-minify-html": "^0.1.7",
+    "gulp-print": "^1.1.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-task-listing": "^1.0.0",
+    "gulp-uglify": "^1.0.2",
+    "gulp-util": "^3.0.1",
+    "jshint-stylish": "^1.0.0",
+    "karma": "^0.12.24",
+    "karma-chai": "^0.1.0",
+    "karma-chai-sinon": "^0.1.3",
+    "karma-chrome-launcher": "^0.1.4",
+    "karma-coverage": "^0.2.4",
+    "karma-firefox-launcher": "^0.1.3",
+    "karma-growl-reporter": "^0.1.1",
+    "karma-mocha": "^0.1.4",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-safari-launcher": "^0.1.1",
+    "karma-sinon": "^1.0.3",
+    "lodash": "^2.4.1",
+    "mocha-clean": "^0.4.0",
+    "node-notifier": "^4.0.3",
+    "phantomjs": "1.9.9",
+    "sinon-chai": "^2.6.0",
+    "yargs": "^3.5.4"
+  },
+  "homepage": "https://github.com/wardbell/bardjs",
+  "keywords": [
+    "angular",
+    "mocha",
+    "chai",
+    "mocks",
+    "testing",
+    "client-side"
+  ],
+  "license": "MIT",
+  "name": "bardjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wardbell/bardjs.git"
+  },
+  "scripts": {
+    "init": "npm install"
+  },
+  "version": "0.1.8"
+}

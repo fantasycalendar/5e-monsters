@@ -2,8 +2,7 @@
 	/* global _ */
 	'use strict';
 
-	angular
-		.module('app')
+	angular.module('app')
 		.controller('managerRowController', ManagerRowController);
 
 	ManagerRowController.$inject = ['$state', 'encounter', 'monsters', 'actionQueue', 'library'];

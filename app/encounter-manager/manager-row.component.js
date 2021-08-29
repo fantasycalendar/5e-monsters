@@ -6,8 +6,7 @@
     // Creates:
     // 
 
-    angular
-        .module('app')
+    angular.module('app')
         .component('managerRow', {
             templateUrl:'app/encounter-manager/manager-row.html',
             controller: 'managerRowController',

@@ -1,8 +1,7 @@
 (function() {
 'use strict';
 
-    angular
-        .module('app')
+    angular.module('app')
         .component('searchControls', {
             templateUrl: 'app/encounter-builder/search.html',
             controller: 'SearchController',

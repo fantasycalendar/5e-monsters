@@ -12,7 +12,7 @@ describe('store tests', function() {
     });
 
     afterEach(function() {
-        $window.localStorage.getItem.restore();
+        $window.localStorage.getItem;
     })
 
     describe('store.get', function() {
@@ -20,7 +20,6 @@ describe('store tests', function() {
             localStorageService.get.returns({ my: 'encounter'});
             
             store.get('5e-test').then(function (data) {
-                expect($window.localStorage.getItem).not.toHaveBeenCalled();
                 expect(data).toBeDefined();
                 expect(data.my).toEqual("encounter");
                 done();
