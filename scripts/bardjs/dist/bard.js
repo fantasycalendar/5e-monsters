@@ -563,7 +563,7 @@
                 if (typeof value === 'function') {
                     service[key] = value;
                 } else {
-                    sinon.stub(service, key, function() {
+                    sinon.stub(service, key).callsFake(function() {
                         return value;
                     });
                 }
