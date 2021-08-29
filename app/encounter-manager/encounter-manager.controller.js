@@ -1,8 +1,7 @@
 (function() {
 	'use strict';
 
-	angular
-		.module('app')
+	angular.module('app')
 		.controller('EncounterManagerController', EncounterManagerController);
 
 	EncounterManagerController.$inject = ['$scope', '$state', 'actionQueue', 'encounter', 'library', 'monsters'];

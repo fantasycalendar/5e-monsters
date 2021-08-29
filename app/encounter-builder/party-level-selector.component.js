@@ -6,8 +6,7 @@
   // Creates:
   // 
 
-  angular
-    .module('app')
+  angular.module('app')
     .component('partyLevelSelector', {
       templateUrl: 'app/encounter-builder/party-level-selector.html',
       controller: 'PartyLevelSelectorController',

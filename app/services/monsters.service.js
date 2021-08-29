@@ -1,7 +1,8 @@
 (function() {
 	"use strict";
 
-	angular.module("app").factory("monsters", Monsters);
+	angular.module("app")
+		.factory("monsters", Monsters);
 
 	var all = [];
 	var byId = {};

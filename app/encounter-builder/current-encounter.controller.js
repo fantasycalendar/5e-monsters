@@ -1,8 +1,7 @@
 (function() {
 'use strict';
 
-    angular
-        .module('app')
+    angular.module('app')
         .controller('CurrentEncounterController', CurrentEncounterController);
 
     CurrentEncounterController.$inject = ['encounter','partyInfo', 'integration'];

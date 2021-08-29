@@ -7,8 +7,7 @@
 		Number.parseInt = window.parseInt;
 	}
 
-	var myApp = angular
-		.module("app", [
+	var myApp = angular.module("app", [
 			"ui.router",
 			"ngTouch",
 			"angularUtils.directives.dirPagination",

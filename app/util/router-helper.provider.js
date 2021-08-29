@@ -2,8 +2,7 @@
 (function() {
   'use strict';
 
-  angular
-    .module('app')
+  angular.module('app')
     .provider('routerHelper', routerHelperProvider);
 
   routerHelperProvider.$inject = ['$locationProvider', '$stateProvider', '$urlRouterProvider'];

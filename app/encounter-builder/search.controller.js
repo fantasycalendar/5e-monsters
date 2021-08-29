@@ -1,8 +1,7 @@
 (function() {
 'use strict';
 
-	angular
-		.module('app')
+	angular.module('app')
 		.controller('SearchController', SearchController);
 
 	SearchController.$inject = ["$scope", "metaInfo", "sheetManager", "sources", "library"];

@@ -6,8 +6,7 @@
   // Creates:
   // 
 
-  angular
-    .module('app')
+  angular.module('app')
     .component('navbar', {
       templateUrl: 'app/navbar/navbar.html',
       controller: NavbarController,
