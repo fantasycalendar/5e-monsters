@@ -1,0 +1,37 @@
+{
+  "name": "bardjs",
+  "version": "0.1.8",
+  "description": "Spec helpers for testing angular v.1.x apps with Mocha, Jasmine or QUnit",
+  "authors": [
+    "John Papa",
+    "Ward Bell"
+  ],
+  "main": [
+    "./dist/bard.js",
+    "./dist/bard-ngRouteTester.js"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/wardbell/bardjs",
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "tests",
+    "*.html",
+    "*.js",
+    ".*"
+  ],
+  "dependencies": {
+    "angular": ">=1.3.8",
+    "angular-mocks": ">=1.3.8",
+    "sinon": "http://sinonjs.org/releases/sinon-1.15.0.js"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "sinon-chai": "^2.5.0"
+  },
+  "exportsOverride": {
+    "sinon": {
+      "js": "index.js"
+    }
+  }
+}

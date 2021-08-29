@@ -25,7 +25,7 @@ module.exports = function(config) {
       '../thirdparty/dirPagination/dirPagination.js',
       '../thirdparty/lodash.js',
       '../thirdparty/angular-local-storage/angular-local-storage.js',
-      '../node_modules/bardjs/dist/bard.js',
+      '../scripts/bardjs/dist/bard.js',
       '*.js',
       '**/*.js',
       '../scripts/**/*.js'
@@ -34,6 +34,8 @@ module.exports = function(config) {
 
     // list of files / patterns to exclude
     exclude: [
+      '../scripts/bardjs/tests/*.js',
+      '../scripts/bardjs/*.js'
     ],
 
     // Use a reporter to print detailed results
