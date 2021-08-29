@@ -2,17 +2,28 @@
 	'use strict';
 
 	angular.module("app")
-		.factory("monsters", Monsters);
-
+		.factory("monsters", [
+			'$rootScope',
+			'misc',
+			'monsterFactory',
+			Monsters
+		]);
+		
 	var all = [];
 	var byId = {};
 	var byCr = {};
 	var loaded = {};
 	var sourcesById = {};
 
-	Monsters.$inject = ["$rootScope", "misc", "monsterFactory"];
 	function Monsters($rootScope, miscLib, monsterFactory) {
+		// defines the factory function that will create a service instance Monsters when called
+		// the service instance has
+		// * properties: all, byCr, byId, and check (a boolean), 
+		// * methods: loadSheet, removeSheet (bound method)
+
 		function loadSheet(args) {
+			// checks if a sheet has been loaded, and if not, loads monsters from that sheet
+
 			var sheets = args.sheets;
 			var sheetId = args.sheetId;
 			var custom = args.custom;
@@ -52,10 +63,17 @@
 		var custom = args.custom;
 		var sheets = args.sheets;
 
+		// for each object Monsters in sheets, iterate with this function
 		sheets.Monsters.forEach(function (monsterData) {
+			
+			// only set the sheetId of the new object monsterData 
 			monsterData.sheetId = sheetId;
+			
+			// create new monster with given sheetId
+			// this is as specified by the Monster constructor in monsterFactory
+			// all other attributes are not set (yet)
 			var monster = new monsterFactory.Monster(monsterData);
-
+		
 			if ( byId[monster.id] ) {
 				// We already have this monster from some other source, so just merge it
 				// with the existing entry
@@ -64,10 +82,14 @@
 				byId[monster.id].sources = Array.from(sources).map(source => JSON.parse(source));
 				return;
 			}
-
+			
+			// now push this monster on to the all array
 			all.push(monster);
+
+			// and set it to be loaded
 			byId[monster.id] = monster;
 
+			// if we haven't added the monster's CR (as a string), then leave it empty
 			if ( ! byCr[monster.cr.string] ) {
 				byCr[monster.cr.string] = [];
 			}
