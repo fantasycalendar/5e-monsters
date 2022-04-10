@@ -110,5 +110,12 @@
       "shortname": "Volo",
       "link": "",
       "defaultselected": ""
+    },
+    {
+      "type": "Official",
+      "name": "Eberron Rising From the Last War",
+      "shortname": "Eberron",
+      "link": "",
+      "defaultselected": ""
     }
   ]
