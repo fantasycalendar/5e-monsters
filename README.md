@@ -1,3 +1,10 @@
+# THIS REPOSITORY IS DEPRECATED
+Since we decided to completely rewrite Kobold Fight Club, we also decided it should no longer be considered a fork of the original. After all, it doesn't share _any_ of the original code, and only really shares some of the ideas in some of the cases.
+
+As a result, there's a new repository, here: https://github.com/fantasycalendar/kobold-plus-fight-club
+
+This repo will be left up for posterity, but we're not touching it anymore.
+
 # Kobold+ Fight Club
 =================
 Kobold+ Fight Club is a fork of Kobold Fight Club by Fantasy Computerworks that seeks to address a number of concerns with the original: 
